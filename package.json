@@ -1,6 +1,6 @@
 {
   "name": "homebridge-mi-aqara-ng",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Homebridge Mi Home/Aqara plugin",
   "license": "GPL",
   "keywords": [
