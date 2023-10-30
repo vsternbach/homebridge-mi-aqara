@@ -12,7 +12,7 @@ class Button2Parser extends DeviceParser {
             'Button2_StatelessProgrammableSwitch': Button2StatelessProgrammableSwitchParser,
             'Button2_Switch_VirtualSinglePress': Button2SwitchVirtualSinglePressParser,
             'Button2_Switch_VirtualDoublePress': Button2SwitchVirtualDoublePressParser,
-            'Button_Switch_VirtualLongPress': Button2SwitchVirtualLongPressParser
+            'Button2_Switch_VirtualLongPress': Button2SwitchVirtualLongPressParser
         }
     }
 }
