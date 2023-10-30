@@ -5,12 +5,13 @@ class GatewayParser extends DeviceParser {
     constructor(platform) {
         super(platform);
     }
-    
+
     getAccessoriesParserInfo() {
         return {
             'Gateway_Lightbulb': GatewayLightbulbParser,
             'Gateway_LightSensor': GatewayLightSensorParser,
-            'Gateway_Switch_JoinPermission': GatewaySwitchJoinPermissionParser
+            'Gateway_Switch_JoinPermission': GatewaySwitchJoinPermissionParser,
+            'Gateway_Ringtone': GatewayRingtoneParser
         }
     }
 }
@@ -22,11 +23,11 @@ class GatewayLightSensorParser extends AccessoryParser {
     constructor(platform, accessoryType) {
         super(platform, accessoryType)
     }
-    
+
     getAccessoryCategory(deviceSid) {
         return this.Accessory.Categories.SENSOR;
     }
-    
+
     getAccessoryInformation(deviceSid) {
         return {
             'Manufacturer': 'Aqara',
@@ -38,14 +39,14 @@ class GatewayLightSensorParser extends AccessoryParser {
     getServices(jsonObj, accessoryName) {
         var that = this;
         var result = [];
-        
+
         var service = new that.Service.LightSensor(accessoryName);
         service.getCharacteristic(that.Characteristic.CurrentAmbientLightLevel);
         result.push(service);
-        
+
         return result;
     }
-    
+
     parserAccessories(jsonObj) {
         var that = this;
         var deviceSid = jsonObj['sid'];
@@ -53,13 +54,13 @@ class GatewayLightSensorParser extends AccessoryParser {
         var accessory = that.platform.AccessoryUtil.getByUUID(uuid);
         if(accessory) {
             var service = accessory.getService(that.Service.LightSensor);
-            
+
             var currentAmbientLightLevelCharacteristic = service.getCharacteristic(that.Characteristic.CurrentAmbientLightLevel);
             var value = that.getCurrentAmbientLightLevelCharacteristicValue(jsonObj, null);
             if(null != value) {
                 currentAmbientLightLevelCharacteristic.updateValue(value);
             }
-            
+
             if(that.platform.ConfigUtil.getAccessorySyncValue(deviceSid, that.accessoryType)) {
                 if (currentAmbientLightLevelCharacteristic.listeners('get').length == 0) {
                     currentAmbientLightLevelCharacteristic.on("get", function(callback) {
@@ -80,7 +81,7 @@ class GatewayLightSensorParser extends AccessoryParser {
             }
         }
     }
-    
+
     getCurrentAmbientLightLevelCharacteristicValue(jsonObj, defaultValue) {
         var value = this.getValueFrJsonObjData(jsonObj, 'illumination');
         if(null != value) {
@@ -100,11 +101,11 @@ class GatewayLightbulbParser extends AccessoryParser {
     constructor(platform, accessoryType) {
         super(platform, accessoryType)
     }
-    
+
     getAccessoryCategory(deviceSid) {
         return this.Accessory.Categories.LIGHTBULB;
     }
-    
+
     getAccessoryInformation(deviceSid) {
         return {
             'Manufacturer': 'Aqara',
@@ -116,18 +117,18 @@ class GatewayLightbulbParser extends AccessoryParser {
     getServices(jsonObj, accessoryName) {
         var that = this;
         var result = [];
-        
+
         var ligthService = new that.Service.Lightbulb(accessoryName);
         ligthService.getCharacteristic(that.Characteristic.On);
         ligthService.getCharacteristic(that.Characteristic.Brightness);
         ligthService.getCharacteristic(that.Characteristic.Hue);
         ligthService.getCharacteristic(that.Characteristic.Saturation);
-        
+
         result.push(ligthService);
-        
+
         return result;
     }
-    
+
     parserAccessories(jsonObj) {
         var that = this;
         var deviceSid = jsonObj['sid'];
@@ -135,31 +136,31 @@ class GatewayLightbulbParser extends AccessoryParser {
         var accessory = that.platform.AccessoryUtil.getByUUID(uuid);
         if(accessory) {
             var ligthService = accessory.getService(that.Service.Lightbulb);
-            
+
             var switchCharacteristic = ligthService.getCharacteristic(that.Characteristic.On);
             var switchValue = that.getSwitchCharacteristicValue(jsonObj, null);
             if(null != switchCharacteristic) {
                 switchCharacteristic.updateValue(switchValue);
             }
-            
+
             var brightnessCharacteristic = ligthService.getCharacteristic(that.Characteristic.Brightness);
             var brightnessValue = that.getBrightnessCharacteristicValue(jsonObj, null);
             if(null != brightnessValue && brightnessValue > 0) {
                 brightnessCharacteristic.updateValue(brightnessValue);
             }
-            
+
             var hueCharacteristic = ligthService.getCharacteristic(that.Characteristic.Hue);
             var hueValue = that.getHueCharacteristicValue(jsonObj, null);
             if(null != hueValue && hueValue > 0) {
                 hueCharacteristic.updateValue(hueValue);
             }
-            
+
             var saturationCharacteristic = ligthService.getCharacteristic(that.Characteristic.Saturation);
             var saturationValue = that.getSaturationCharacteristicValue(jsonObj, null);
             if(null != saturationValue && saturationValue > 0) {
                 saturationCharacteristic.updateValue(saturationValue);
             }
-            
+
             if(that.platform.ConfigUtil.getAccessorySyncValue(deviceSid, that.accessoryType)) {
                 if (switchCharacteristic.listeners('get').length == 0) {
                     switchCharacteristic.on("get", function(callback) {
@@ -177,7 +178,7 @@ class GatewayLightbulbParser extends AccessoryParser {
                         });
                     });
                 }
-                
+
                 if (brightnessCharacteristic.listeners('get').length == 0) {
                     brightnessCharacteristic.on("get", function(callback) {
                         var command = '{"cmd":"read", "sid":"' + deviceSid + '"}';
@@ -198,7 +199,7 @@ class GatewayLightbulbParser extends AccessoryParser {
                         });
                     });
                 }
-                
+
                 if (hueCharacteristic.listeners('get').length == 0) {
                     hueCharacteristic.on("get", function(callback) {
                         var command = '{"cmd":"read", "sid":"' + deviceSid + '"}';
@@ -219,7 +220,7 @@ class GatewayLightbulbParser extends AccessoryParser {
                         });
                     });
                 }
-                
+
                 if (saturationCharacteristic.listeners('get').length == 0) {
                     saturationCharacteristic.on("get", function(callback) {
                         var command = '{"cmd":"read", "sid":"' + deviceSid + '"}';
@@ -241,7 +242,7 @@ class GatewayLightbulbParser extends AccessoryParser {
                     });
                 }
             }
-            
+
             if (switchCharacteristic.listeners('set').length == 0) {
                 switchCharacteristic.on("set", function(value, callback) {
         //          that.platform.log.debug("[MiAqaraPlatform][DEBUG]switch: " + value);
@@ -262,7 +263,7 @@ class GatewayLightbulbParser extends AccessoryParser {
                     }
                 });
             }
-            
+
             if (brightnessCharacteristic.listeners('set').length == 0) {
                 brightnessCharacteristic.on("set", function(value, callback) {
         //          that.platform.log.debug("[MiAqaraPlatform][DEBUG]brightness: " + value);
@@ -281,7 +282,7 @@ class GatewayLightbulbParser extends AccessoryParser {
                     }
                 });
             }
-            
+
             if (hueCharacteristic.listeners('set').length == 0) {
                 hueCharacteristic.on("set", function(value, callback) {
         //          that.platform.log.debug("[MiAqaraPlatform][DEBUG]hue: " + value);
@@ -296,7 +297,7 @@ class GatewayLightbulbParser extends AccessoryParser {
                     });
                 });
             }
-            
+
             if (saturationCharacteristic.listeners('set').length == 0) {
                 saturationCharacteristic.on("set", function(value, callback) {
         //          that.platform.log.debug("[MiAqaraPlatform][DEBUG]saturation: " + value);
@@ -326,7 +327,7 @@ class GatewayLightbulbParser extends AccessoryParser {
             return defaultValue;
         }
     }
-    
+
     getBrightnessCharacteristicValue(jsonObj, defaultValue) {
         var rawRgb = this.getValueFrJsonObjData(jsonObj, 'rgb');
         if((null != rawRgb)) {
@@ -340,7 +341,7 @@ class GatewayLightbulbParser extends AccessoryParser {
             return defaultValue;
         }
     }
-    
+
     getHueCharacteristicValue(jsonObj, defaultValue) {
         var rawRgb = this.getValueFrJsonObjData(jsonObj, 'rgb');
         if((null != rawRgb)) {
@@ -356,7 +357,7 @@ class GatewayLightbulbParser extends AccessoryParser {
             return defaultValue;
         }
     }
-    
+
     getSaturationCharacteristicValue(jsonObj, defaultValue) {
         var rawRgb = this.getValueFrJsonObjData(jsonObj, 'rgb');
         if((null != rawRgb)) {
@@ -372,7 +373,7 @@ class GatewayLightbulbParser extends AccessoryParser {
             return defaultValue;
         }
     }
-    
+
     controlLight(deviceSid, power, hue, saturation, brightness) {
         var that = this;
         return new Promise((resolve, reject) => {
@@ -390,7 +391,7 @@ class GatewayLightbulbParser extends AccessoryParser {
                 var rgb = that.hsb2rgb([hue, saturation/100, 1]);
                 prepValue = parseInt(that.dec2hex(brightness, 2) + that.dec2hex(rgb[0], 2) + that.dec2hex(rgb[1], 2) + that.dec2hex(rgb[2], 2), 16);
             }
-            
+
             var command = '{"cmd":"write","model":"gateway","sid":"' + deviceSid + '","data":"{\\"rgb\\":' + prepValue + ', \\"key\\": \\"${key}\\"}"}';
             if(that.platform.ConfigUtil.getAccessoryIgnoreWriteResult(deviceSid, that.accessoryType)) {
                 that.platform.sendWriteCommandWithoutFeedback(deviceSid, command);
@@ -437,7 +438,7 @@ class GatewayLightbulbParser extends AccessoryParser {
         var hsb = [];
         var rearranged = rgb.slice(0);
         var maxIndex = 0,minIndex = 0;
-        var tmp;        
+        var tmp;
         //将rgb的值从小到大排列，存在rearranged数组里
         for(var i=0;i<2;i++) {
             for(var j=0;j<2-i;j++)
@@ -445,7 +446,7 @@ class GatewayLightbulbParser extends AccessoryParser {
                     tmp=rearranged[j+1];
                     rearranged[j+1]=rearranged[j];
                     rearranged[j]=tmp;
-                }                
+                }
         }
         //rgb的下标分别为0、1、2，maxIndex和minIndex用于存储rgb中最大最小值的下标
         for(var i=0;i<3;i++) {
@@ -480,14 +481,14 @@ class GatewayLightbulbParser extends AccessoryParser {
 class GatewaySwitchJoinPermissionParser extends AccessoryParser {
     constructor(platform, accessoryType) {
         super(platform, accessoryType)
-        
+
         this.joinPermissionTimeout = {};
     }
-    
+
     getAccessoryCategory(deviceSid) {
         return this.Accessory.Categories.SWITCH;
     }
-    
+
     getAccessoryInformation(deviceSid) {
         return {
             'Manufacturer': 'Aqara',
@@ -499,14 +500,14 @@ class GatewaySwitchJoinPermissionParser extends AccessoryParser {
     getServices(jsonObj, accessoryName) {
         var that = this;
         var result = [];
-        
+
         var service = new that.Service.Switch(accessoryName);
         service.getCharacteristic(that.Characteristic.On);
         result.push(service);
-        
+
         return result;
     }
-    
+
     parserAccessories(jsonObj) {
         var that = this;
         var deviceSid = jsonObj['sid'];
@@ -519,7 +520,7 @@ class GatewaySwitchJoinPermissionParser extends AccessoryParser {
             // if(null != value) {
                 // onCharacteristic.updateValue(value);
             // }
-            
+
             // if(that.platform.ConfigUtil.getAccessorySyncValue(deviceSid, that.accessoryType)) {
                 // if (onCharacteristic.listeners('get').length == 0) {
                     // onCharacteristic.on("get", function(callback) {
@@ -538,7 +539,7 @@ class GatewaySwitchJoinPermissionParser extends AccessoryParser {
                     // });
                 // }
             // }
-            
+
             if(onCharacteristic.listeners('set').length == 0) {
                 onCharacteristic.on("set", function(value, callback) {
                     clearTimeout(that.joinPermissionTimeout[deviceSid]);
@@ -568,7 +569,7 @@ class GatewaySwitchJoinPermissionParser extends AccessoryParser {
             }
         }
     }
-    
+
     // getOnCharacteristicValue(jsonObj, defaultValue) {
         // var value = this.getValueFrJsonObjData(jsonObj, 'channel_0');
         // if(value === 'on') {
@@ -578,5 +579,109 @@ class GatewaySwitchJoinPermissionParser extends AccessoryParser {
         // } else {
             // return defaultValue;
         // }
+    // }
+}
+
+class GatewayRingtoneParser extends AccessoryParser {
+    constructor(platform, accessoryType) {
+        super(platform, accessoryType)
+
+        this.joinPermissionTimeout = {};
+    }
+
+    getAccessoryCategory(deviceSid) {
+        return this.Accessory.Categories.SWITCH;
+    }
+
+    getAccessoryInformation(deviceSid) {
+        return {
+            'Manufacturer': 'Aqara',
+            'Model': 'Gateway',
+            'SerialNumber': deviceSid
+        };
+    }
+
+    getServices(jsonObj, accessoryName) {
+        var that = this;
+        var result = [];
+
+        var service = new that.Service.Switch(accessoryName);
+        service.getCharacteristic(that.Characteristic.On);
+        result.push(service);
+
+        return result;
+    }
+
+    parserAccessories(jsonObj) {
+        var that = this;
+        var deviceSid = jsonObj['sid'];
+        var uuid = that.getAccessoryUUID(deviceSid);
+        var accessory = that.platform.AccessoryUtil.getByUUID(uuid);
+        if(accessory) {
+            var service = accessory.getService(that.Service.Switch);
+            var onCharacteristic = service.getCharacteristic(that.Characteristic.On);
+            // var value = that.getOnCharacteristicValue(jsonObj, null);
+            // if(null != value) {
+            // onCharacteristic.updateValue(value);
+            // }
+
+            // if(that.platform.ConfigUtil.getAccessorySyncValue(deviceSid, that.accessoryType)) {
+            // if (onCharacteristic.listeners('get').length == 0) {
+            // onCharacteristic.on("get", function(callback) {
+            // var command = '{"cmd":"read", "sid":"' + deviceSid + '"}';
+            // that.platform.sendReadCommand(deviceSid, command).then(result => {
+            // var value = that.getOnCharacteristicValue(result, null);
+            // if(null != value) {
+            // callback(null, value);
+            // } else {
+            // callback(new Error('get value fail: ' + result));
+            // }
+            // }).catch(function(err) {
+            // that.platform.log.error(err);
+            // callback(err);
+            // });
+            // });
+            // }
+            // }
+
+            if(onCharacteristic.listeners('set').length == 0) {
+                onCharacteristic.on("set", function(value, callback) {
+                    clearTimeout(that.joinPermissionTimeout[deviceSid]);
+                    var command = '{"cmd":"write","model":"gateway","sid":"' + deviceSid + '","data":"{\\"mid\\":' + (value ? 10 : 10000) + ', \\"vol\\":100, \\"key\\": \\"${key}\\"}"}';
+                    if(that.platform.ConfigUtil.getAccessoryIgnoreWriteResult(deviceSid, that.accessoryType)) {
+                        that.platform.sendWriteCommandWithoutFeedback(deviceSid, command);
+                        that.callback2HB(deviceSid, this, callback, null);
+                        if(value) {
+                            that.joinPermissionTimeout[deviceSid] = setTimeout(() => {
+                                onCharacteristic.updateValue(false);
+                            }, 30 * 1000);
+                        }
+                    } else {
+                        that.platform.sendWriteCommand(deviceSid, command).then(result => {
+                            that.callback2HB(deviceSid, this, callback, null);
+                            if(value) {
+                                that.joinPermissionTimeout[deviceSid] = setTimeout(() => {
+                                    onCharacteristic.updateValue(false);
+                                }, 30 * 1000);
+                            }
+                        }).catch(function(err) {
+                            that.platform.log.error(err);
+                            that.callback2HB(deviceSid, this, callback, err);
+                        });
+                    }
+                });
+            }
+        }
+    }
+
+    // getOnCharacteristicValue(jsonObj, defaultValue) {
+    // var value = this.getValueFrJsonObjData(jsonObj, 'channel_0');
+    // if(value === 'on') {
+    // return true;
+    // } else if(value === 'off') {
+    // return false;
+    // } else {
+    // return defaultValue;
+    // }
     // }
 }
