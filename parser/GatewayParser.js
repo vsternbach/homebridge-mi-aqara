@@ -585,8 +585,6 @@ class GatewaySwitchJoinPermissionParser extends AccessoryParser {
 class GatewayRingtoneParser extends AccessoryParser {
     constructor(platform, accessoryType) {
         super(platform, accessoryType)
-
-        this.joinPermissionTimeout = {};
     }
 
     getAccessoryCategory(deviceSid) {
@@ -620,68 +618,31 @@ class GatewayRingtoneParser extends AccessoryParser {
         if(accessory) {
             var service = accessory.getService(that.Service.Switch);
             var onCharacteristic = service.getCharacteristic(that.Characteristic.On);
-            // var value = that.getOnCharacteristicValue(jsonObj, null);
-            // if(null != value) {
-            // onCharacteristic.updateValue(value);
-            // }
 
-            // if(that.platform.ConfigUtil.getAccessorySyncValue(deviceSid, that.accessoryType)) {
-            // if (onCharacteristic.listeners('get').length == 0) {
-            // onCharacteristic.on("get", function(callback) {
-            // var command = '{"cmd":"read", "sid":"' + deviceSid + '"}';
-            // that.platform.sendReadCommand(deviceSid, command).then(result => {
-            // var value = that.getOnCharacteristicValue(result, null);
-            // if(null != value) {
-            // callback(null, value);
-            // } else {
-            // callback(new Error('get value fail: ' + result));
-            // }
-            // }).catch(function(err) {
-            // that.platform.log.error(err);
-            // callback(err);
-            // });
-            // });
-            // }
-            // }
-
-            if(onCharacteristic.listeners('set').length == 0) {
+            if(!onCharacteristic.listeners('set').length) {
                 onCharacteristic.on("set", function(value, callback) {
-                    clearTimeout(that.joinPermissionTimeout[deviceSid]);
-                    var command = '{"cmd":"write","model":"gateway","sid":"' + deviceSid + '","data":"{\\"mid\\":' + (value ? 10 : 10000) + ', \\"vol\\":100, \\"key\\": \\"${key}\\"}"}';
-                    if(that.platform.ConfigUtil.getAccessoryIgnoreWriteResult(deviceSid, that.accessoryType)) {
-                        that.platform.sendWriteCommandWithoutFeedback(deviceSid, command);
+                    function callback2HB() {
                         that.callback2HB(deviceSid, this, callback, null);
                         if(value) {
-                            that.joinPermissionTimeout[deviceSid] = setTimeout(() => {
-                                onCharacteristic.updateValue(false);
-                            }, 30 * 1000);
+                            setTimeout(() => onCharacteristic.updateValue(false), 10000);
                         }
+                    }
+                    const ringtoneId = that.platform.ConfigUtil.getAccessoryDefaultValue(deviceSid, that.accessoryType) || 10;
+                    const stopId = 10000;
+                    const command = '{"cmd":"write","model":"gateway","sid":"' + deviceSid + '","data":"{\\"mid\\":' + (value ? ringtoneId : stopId) + ', \\"vol\\":100, \\"key\\": \\"${key}\\"}"}';
+                    if(that.platform.ConfigUtil.getAccessoryIgnoreWriteResult(deviceSid, that.accessoryType)) {
+                        that.platform.sendWriteCommandWithoutFeedback(deviceSid, command);
+                        callback2HB();
                     } else {
-                        that.platform.sendWriteCommand(deviceSid, command).then(result => {
-                            that.callback2HB(deviceSid, this, callback, null);
-                            if(value) {
-                                that.joinPermissionTimeout[deviceSid] = setTimeout(() => {
-                                    onCharacteristic.updateValue(false);
-                                }, 30 * 1000);
-                            }
-                        }).catch(function(err) {
-                            that.platform.log.error(err);
-                            that.callback2HB(deviceSid, this, callback, err);
-                        });
+                        that.platform.sendWriteCommand(deviceSid, command)
+                            .then(result => callback2HB())
+                            .catch(function(err) {
+                                that.platform.log.error(err);
+                                that.callback2HB(deviceSid, this, callback, err);
+                            });
                     }
                 });
             }
         }
     }
-
-    // getOnCharacteristicValue(jsonObj, defaultValue) {
-    // var value = this.getValueFrJsonObjData(jsonObj, 'channel_0');
-    // if(value === 'on') {
-    // return true;
-    // } else if(value === 'off') {
-    // return false;
-    // } else {
-    // return defaultValue;
-    // }
-    // }
 }

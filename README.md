@@ -344,6 +344,7 @@ The config supported are as follows:
 |4|[syncValue](#defaultvalue-syncvalue-configuration默认值-同步值配置)|Boolean<br>布尔|accessory will synchronization value when homebridge call the get function, if it's true.<br>如果设为true，配件会在HomeBridge每次调用get方法时同步一次值。|false|fasle|false|
 |5|[ignoreWriteResult](#defaultvalue-ignorewriteresult-configuration默认值-忽略控制反馈配置)|Boolean<br>布尔|if set to true, the result of control is not detected.<br>如果设为true，则忽略控制结果检测。|true|If your network is awful, it's recommended to be set true.<br>如果网络环境不是很好，建议设为true|false|
 |6|[disableNoResponse](#defaultvalue-disablenoresponse-configuration默认值-隐藏未响应状态配置)|Boolean<br>布尔|use jump back the last value to replace show NoResponse, you can set it true.<br>如果设为true，当设备未响应时配件通过自动跳回上一个值的方式来替代显示未响应|false|false|true|
+|7|defaultValue|Number/String|use to set default value for accessory, currently used only by Gateway_Ringtone to set the [ringtone_id](https://www.home-assistant.io/integrations/xiaomi_aqara/)|false|false|
 
 The rules are as follows:   
 配置规则如下：   
