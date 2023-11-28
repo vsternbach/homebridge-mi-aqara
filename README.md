@@ -910,22 +910,9 @@ mv cachedAccessories cachedAccessories_\`date '+%Y%m%d_%H%M%S'\`.bak
 echo [] > cachedAccessories   
 ```
 ## Original Credits
-Thanks for
+Thanks to
 [nfarina](https://github.com/nfarina)(the author of [homebridge](https://github.com/nfarina/homebridge)),
 [snOOrz](https://github.com/snOOrz)(the author of [homebridge-aqara](https://github.com/snOOrz/homebridge-aqara)),
-[licuhui](https://github.com/licuhui),
-[攀旺智能](https://pwzn.taobao.com/),
-[magaHH](https://github.com/magaHH),
-[isundaylee](https://github.com/isundaylee),
-[ileler](https://github.com/ileler),
-[myriky](https://github.com/myriky),
-[Runc2333](https://github.com/Runc2333),
-[yangliu](https://github.com/yangliu),
-[wonderfullay](https://github.com/wonderfullay),
-[BrianHenryIE](https://github.com/BrianHenryIE),
-all other developer and testers.   
-[nfarina](https://github.com/nfarina)([homebridge](https://github.com/nfarina/homebridge)),
-[snOOrz](https://github.com/snOOrz)([homebridge-aqara](https://github.com/snOOrz/homebridge-aqara)),
 [licuhui](https://github.com/licuhui),
 [攀旺智能](https://pwzn.taobao.com/),
 [magaHH](https://github.com/magaHH),
